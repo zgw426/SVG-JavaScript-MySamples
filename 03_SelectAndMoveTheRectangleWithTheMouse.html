@@ -1,0 +1,108 @@
+
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8"/>
+<style>
+<!--
+* { margin: 0px; padding: 0px; }
+svg { border:solid 1px #a02180; }
+-->
+</style>
+<script>
+let SvgArea = 'svgArea'; // SVGタグのID
+// objs : 描画する四角形のパラメータ
+let objs = [
+    { "x": 10,  "y": 10, "w":100, "h":100, color: "#ABC1FF", opacity: "0.8", label: "FUGA" },
+    { "x": 200, "y": 30, "w":100, "h":100, color: "#FF02AB", opacity: "0.5", label: "HOGE" },
+    { "x": 300, "y": 10, "w":50,  "h":50,  color: "#FFABC1", opacity: "0.9", label: "PIYO" },
+    { "x": 400, "y": 30, "w":50,  "h":50,  color: "#991122", opacity: "1.0", label: "MATE" },
+]
+let tgtRect;
+let tgtId; // マウスクリックしたときに選択した四角形(rect)のID
+let drag = {isMouseDown : false, id : null, target : null,offsetx : 0,offsety : 0,} // 移動する四角形(rect)の情報
+
+//SVG Rect(四角形) を作る
+function svgRect(svgFld,x,y,w,h,color,opa,id){
+    this.rect=document.createElementNS("http://www.w3.org/2000/svg","rect");
+    this.rect.setAttributeNS(null,"x",x);
+    this.rect.setAttributeNS(null,"y",y);
+    this.rect.setAttributeNS(null,"width",w);
+    this.rect.setAttributeNS(null,"height",h);
+    this.rect.setAttributeNS(null,"fill", color);
+    this.rect.setAttributeNS(null,"fill-opacity", opa);
+    this.rect.setAttributeNS(null,"id", id);
+    document.getElementById(svgFld).appendChild(this.rect);
+}
+
+document.onmouseup = function () {
+	drag.isMouseDown = false;
+	drag.target = null;
+}
+document.onmousemove = function( e ) {
+    if (drag.target != null) {
+		drag.target.x.baseVal.value = e.clientX - drag.offsetx;
+		drag.target.y.baseVal.value = e.clientY - drag.offsety;
+        objs[ drag.id ]["x"] = drag.target.x.baseVal.value;
+        objs[ drag.id ]["y"] = drag.target.y.baseVal.value;
+    }
+}
+document.onmousedown = function( e ) {
+    eX = e.pageX;
+    eY = e.pageY;
+    for (let i in objs) {
+        iId    = i;
+        iXmin  = objs[i]["x"];
+        iXmax  = objs[i]["x"] + objs[i]["w"];
+        iYmin  = objs[i]["y"];
+        iYmax  = objs[i]["y"] + objs[i]["h"];
+
+        if (iXmin <= eX && eX < iXmax){ // マウスポインタのX座標が図形の範囲内にあるか？
+            if (iYmin <= eY && eY < iYmax){ // マウスポインタのX座標が図形の範囲内にある場合、Y座標は範囲内にあるか？
+                tgtId = Number(iId);
+                tgtRect = document.getElementById( iId );
+                drag.id = tgtId;
+                drag.target = tgtRect;
+                drag.offsetx = e.clientX - objs[ tgtId ]["x"];
+                drag.offsety = e.clientY - objs[ tgtId ]["y"];
+                drag.isMouseDown = true;
+                break;
+            }
+        }
+    }
+}
+
+window.onload = function() {
+    for (let i in objs) { // 四角形を描画
+        iId      = i;
+        iX       = objs[i]["x"];
+        iY       = objs[i]["y"];
+        iW       = objs[i]["w"];
+        iH       = objs[i]["h"];
+        iColor   = objs[i]["color"];
+        iOpacity = objs[i]["opacity"];
+		iLabel   = objs[i]["label"]
+        svgRect(SvgArea,iX,iY,iW,iH,iColor,iOpacity,iId);
+    }
+}
+
+function showDebuginfo(argStr){ // デバッグ用
+	wStr = "";
+	wStr = argStr + "<BR>\n-------<BR>\n";
+	wStr += "isMouseDown = "+ drag["isMouseDown"] + "<BR>\n";
+	wStr += "target = "  + drag["target"] + "<BR>\n";
+	wStr += "offsetx = " + drag["offsetx"] + "<BR>\n";
+	wStr += "offsety = " + drag["offsety"] + "<BR>\n";
+    wStr += "objs[0] = " + objs[0]["x"] + ", " + objs[0]["y"] +"<BR>\n";
+    wStr += "objs[1] = " + objs[1]["x"] + ", " + objs[1]["y"] +"<BR>\n";
+	document.getElementById("debugArea").innerHTML = wStr;
+    console.log("[showDebuginof]\n" + wStr)
+}
+
+</script>
+</head>
+<body>
+<svg width="1000" height="200" id="svgArea"></svg>
+<div id="debugArea"></div>
+</body>
+</html>

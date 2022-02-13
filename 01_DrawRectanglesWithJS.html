@@ -1,0 +1,63 @@
+
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8"/>
+<script>
+let SvgArea = 'svgArea';
+let objs = [
+    { "x": 100, "y": 100, "w":100, "h":100, color: "#ABC1FF", opacity: "0.8", label: "FUGA" },
+    { "x": 200, "y": 200, "w":70, "h":50, color: "#FF02AB", opacity: "0.5", label: "HOGE" },
+]
+
+function myRect(svgFld,x,y,w,h,color,opa,id){
+    this.rect=document.createElementNS("http://www.w3.org/2000/svg","rect");
+    this.rect.setAttributeNS(null,"x",x);
+    this.rect.setAttributeNS(null,"y",y);
+    this.rect.setAttributeNS(null,"width",w);
+    this.rect.setAttributeNS(null,"height",h);
+    this.rect.setAttributeNS(null,"fill", color);
+    this.rect.setAttributeNS(null,"fill-opacity", opa);
+    this.rect.setAttributeNS(null,"id", id);
+    document.getElementById(svgFld).appendChild(this.rect);
+    /*
+    this.rect.addEventListener("click",this,false);
+    this.handleEvent= function(evt){
+        switch (evt.type){
+            case "click":
+                selectRect( evt.pageX,evt.pageY );
+            break;
+        }
+    }
+    */
+}
+window.onload = function() {
+    for (let i in objs) {
+        console.log(objs[i]);
+        iId      = i;
+        iX       = objs[i]["x"];
+        iY       = objs[i]["y"];
+        iW       = objs[i]["w"];
+        iH       = objs[i]["h"];
+        iColor   = objs[i]["color"];
+        iOpacity = objs[i]["opacity"];
+        iLabel      = objs[i]["label"];
+
+        console.log(iX);
+        console.log(iY);
+        console.log(iW);
+        console.log(iH);
+        console.log(iColor);
+        console.log(iOpacity);
+        console.log(iId);
+
+        myRect(SvgArea,iX,iY,iW,iH,iColor,iOpacity,iId);
+    }
+}
+
+</script>
+</head>
+<body>
+<svg width="1000" height="400" id="svgArea"></svg>
+</body>
+</html>
