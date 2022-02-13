@@ -20,16 +20,6 @@ function myRect(svgFld,x,y,w,h,color,opa,id){
     this.rect.setAttributeNS(null,"fill-opacity", opa);
     this.rect.setAttributeNS(null,"id", id);
     document.getElementById(svgFld).appendChild(this.rect);
-    /*
-    this.rect.addEventListener("click",this,false);
-    this.handleEvent= function(evt){
-        switch (evt.type){
-            case "click":
-                selectRect( evt.pageX,evt.pageY );
-            break;
-        }
-    }
-    */
 }
 window.onload = function() {
     for (let i in objs) {
