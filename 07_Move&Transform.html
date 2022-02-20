@@ -224,7 +224,7 @@ document.onmousedown = function( e ) {
                 drag.cbrOffsety = e.clientY - objs[ drag.id ]["y"] - objs[ drag.id ]["h"]+cRadius; // 右下の円(Y座標)
 
                 // drag.action (Move or Transform) の決定
-                let rangeVal = 8;
+                let rangeVal = cRadius*2;
                 let cx1min = objs[ drag.id ]["x"] -rangeVal;
                 let cx1max = objs[ drag.id ]["x"] +rangeVal;
                 let cx2min = objs[ drag.id ]["x"] + objs[ drag.id ]["w"] -rangeVal;
