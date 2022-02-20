@@ -94,17 +94,11 @@ document.onmousemove = function( e ) {
             drag.cbrTarget.cy.baseVal.value = e.clientY - drag.cbrOffsety; // 右下の円(Y座標)
         }else if( drag.action == "Transform-X"){ // 図形の変形(X方向のみ)
             drag.target.width.baseVal.value  = objs[ drag.id ]["w"] + e.clientX - drag.cDifferencex;
-            //drag.target.height.baseVal.value = objs[ drag.id ]["h"] + e.clientY - drag.cDifferencey;
             drag.ctrTarget.cx.baseVal.value = e.clientX - drag.ctrOffsetx; // 右上の円(X座標)
-            //drag.cblTarget.cy.baseVal.value = e.clientY - drag.cblOffsety; // 左下の円(Y座標)
             drag.cbrTarget.cx.baseVal.value = e.clientX - drag.cbrOffsetx; // 左下の円(X座標)
-            //drag.cbrTarget.cy.baseVal.value = e.clientY - drag.cbrOffsety; // 左下の円(Y座標)
         }else if( drag.action == "Transform-Y"){ // 図形の変形(Y方向のみ)
-            //drag.target.width.baseVal.value  = objs[ drag.id ]["w"] + e.clientX - drag.cDifferencex;
             drag.target.height.baseVal.value = objs[ drag.id ]["h"] + e.clientY - drag.cDifferencey;
-            //drag.ctrTarget.cx.baseVal.value = e.clientX - drag.ctrOffsetx; // 右上の円(X座標)
             drag.cblTarget.cy.baseVal.value = e.clientY - drag.cblOffsety; // 左下の円(Y座標)
-            //drag.cbrTarget.cx.baseVal.value = e.clientX - drag.cbrOffsetx; // 左下の円(X座標)
             drag.cbrTarget.cy.baseVal.value = e.clientY - drag.cbrOffsety; // 左下の円(Y座標)
         }else if( drag.action == "Transform-XY"){ // 図形の変形
             drag.target.width.baseVal.value  = objs[ drag.id ]["w"] + e.clientX - drag.cDifferencex;
@@ -115,33 +109,6 @@ document.onmousemove = function( e ) {
             drag.cbrTarget.cy.baseVal.value = e.clientY - drag.cbrOffsety; // 左下の円(Y座標)
         }
     }
-
-    // 図形の変形
-    /*
-    if (drag.target != null) {
-		drag.target.width.baseVal.value  = objs[ drag.id ]["w"] + e.clientX - drag.cDifferencex;
-		drag.target.height.baseVal.value = objs[ drag.id ]["h"] + e.clientY - drag.cDifferencey;
-
-
-        drag.ctrTarget.cx.baseVal.value = e.clientX - drag.ctrOffcsetx; // 右上の円(X座標)
-		drag.cblTarget.cy.baseVal.value = e.clientY - drag.cblOffcsety; // 左下の円(Y座標)
-        drag.cbrTarget.cx.baseVal.value = e.clientX - drag.cbrOffcsetx; // 左下の円(X座標)
-		drag.cbrTarget.cy.baseVal.value = e.clientY - drag.cbrOffcsety; // 左下の円(Y座標)
-
-    }
-    */
-    // 図形の移動
-    /*
-    if (drag.target != null) {
-		drag.target.x.baseVal.value = e.clientX - drag.offsetx;
-		drag.target.y.baseVal.value = e.clientY - drag.offsety;
-        objs[ drag.id ]["x"] = drag.target.x.baseVal.value;
-        objs[ drag.id ]["y"] = drag.target.y.baseVal.value;
-
-		drag.ctlTarget.cx.baseVal.value = e.clientX - drag.ctlOffsetx;
-		drag.ctlTarget.cy.baseVal.value = e.clientY - drag.ctlOffsety;
-    }
-    */
 }
 document.onmousedown = function( e ) {
     eX = e.pageX;
@@ -170,8 +137,6 @@ document.onmousedown = function( e ) {
                         drag.cTarget = false;
                     }
                 }
-
-                //showDebuginfo(1,"chIdFlg=" + chIdFlg + ", iId = " + iId + ", drag.id = " + drag.id);
 
                 drag.id = Number(iId);
                 drag.target = document.getElementById( iId );
@@ -203,7 +168,6 @@ document.onmousedown = function( e ) {
                         drag.cbrId = drag.id + "br";
                         drag.cbrElement = svgCircle(SvgArea, objs[ drag.id ]["x"]+objs[ drag.id ]["w"]-cRadius, objs[ drag.id ]["y"]+objs[ drag.id ]["h"]-cRadius,cRadius*2,'#9ba89b','#2a2a2a',0.9,0.8,0.5 , drag.cbrId);
                         drag.cbrTarget = document.getElementById( drag.cbrId );
-
                     }
                 }
 
@@ -212,14 +176,11 @@ document.onmousedown = function( e ) {
                 drag.cDifferencey= e.clientY; // 円移動に使うオフセット(Y座標)
 
                 drag.ctrOffsetx = e.clientX - objs[ drag.id ]["x"] - objs[ drag.id ]["w"]+cRadius; // 右上の円(X座標)
-                drag.ctrOffsety = e.clientY - objs[ drag.id ]["y"]-cRadius;                      // 右上の円(Y座標)
-
-                drag.ctlOffsetx = e.clientX - objs[ drag.id ]["x"]-cRadius;                      // 左上の円(X座標)
-                drag.ctlOffsety = e.clientY - objs[ drag.id ]["y"]-cRadius;                      // 左上の円(Y座標)
-
-                drag.cblOffsetx = e.clientX - objs[ drag.id ]["x"]-cRadius;                      // 左下の円(X座標)
+                drag.ctrOffsety = e.clientY - objs[ drag.id ]["y"]-cRadius;                        // 右上の円(Y座標)
+                drag.ctlOffsetx = e.clientX - objs[ drag.id ]["x"]-cRadius;                        // 左上の円(X座標)
+                drag.ctlOffsety = e.clientY - objs[ drag.id ]["y"]-cRadius;                        // 左上の円(Y座標)
+                drag.cblOffsetx = e.clientX - objs[ drag.id ]["x"]-cRadius;                        // 左下の円(X座標)
                 drag.cblOffsety = e.clientY - objs[ drag.id ]["y"] - objs[ drag.id ]["h"]+cRadius; // 左下の円(Y座標)
-
                 drag.cbrOffsetx = e.clientX - objs[ drag.id ]["x"] - objs[ drag.id ]["w"]+cRadius; // 右下の円(X座標)
                 drag.cbrOffsety = e.clientY - objs[ drag.id ]["y"] - objs[ drag.id ]["h"]+cRadius; // 右下の円(Y座標)
 
@@ -247,19 +208,12 @@ document.onmousedown = function( e ) {
                         drag.action = "Transform-XY";
                     }
                 }
-                //showDebuginfo(1,"cx1min=" + cx1min + ", cx1max=" + cx1max);
-                //showDebuginfo(1,"cy1min=" + cy1min + ", cy1max=" + cy1max);
-                //showDebuginfo(1,"cx2min=" + cx2min + ", cx2max=" + cx2max);
-                //showDebuginfo(1,"cy2min=" + cy2min + ", cy2max=" + cy2max);
-                //showDebuginfo(1,"act=" + drag.action + ", eX=" + eX + ", eY=" + eY);
-
                 break;
             }
         }
     }
     if(ditectFlg == 0){    //クリックしたところに図形がなった場合
         if (drag.cTarget != false) {
-            //showDebuginfo(0,"図形の削除");
             initialDragVal(); // drag の初期化           
         }
     }
@@ -280,25 +234,6 @@ function initialDragVal(){
     drag.cbrId = null; drag.cbrTarget=null; drag.cbrElement=null; drag.cbrOffsetx=0; drag.cbrOffsety=0;
     drag.cblId = null; drag.cblTarget=null; drag.cblElement=null; drag.cblOffsetx=0; drag.cblOffsety=0;
 }
-
-/*
-let drag = {
-    action : null,
-    isMouseDown : false,
-    id : null, target: null, offsetx: 0, offsety: 0,
-    cTarget: false, cDifferencex: 0, cDifferencey: 0,
-    ctlId: null, ctlTarget: null, ctlElement: null, ctlOffsetx:0, ctlOffsety: 0,
-    ctrId: null, ctrTarget: null, ctrElement: null, ctrOffsetx:0, ctrOffsety: 0,
-    cblId: null, cblTarget: null, cblElement: null, cblOffsetx:0, cblOffsety: 0,
-    cbrId: null, cbrTarget: null, cbrElement: null, cbrOffsetx:0, cbrOffsety: 0
-}
-*/
-
-
-
-
-
-
 
 window.onload = function() {
     for (let i in objs) { // 四角形を描画
@@ -331,18 +266,10 @@ function showDebuginfo(argFlg,argStr){ // デバッグ用
         wStr = "drag.ctrElement = " + drag.ctrElement + "<BR>";
         wStr = "drag.ctlOffsetx = " + drag.ctlOffsetx + "<BR>";
         wStr = "drag.ctlOffcsety = " + drag.ctlOffcsety + "<BR>";
-
-        }
+    }
 	document.getElementById("debugArea").innerHTML = wStr;
     console.log("[DEBUG] " + wStr)
 }
-
-
-
-
-
-
-
 </script>
 </head>
 <body>

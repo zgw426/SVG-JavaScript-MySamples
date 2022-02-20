@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="ja">
 <head>
@@ -81,17 +80,10 @@ document.onmousemove = function( e ) {
     if (drag.target != null) {
 		drag.target.width.baseVal.value  = objs[ drag.id ]["w"] + e.clientX - drag.cDifferencex;
 		drag.target.height.baseVal.value = objs[ drag.id ]["h"] + e.clientY - drag.cDifferencey;
-
-        //showDebuginfo(1,"drag.target.width.baseVal.value = " + drag.target.width.baseVal.value +", drag.target.height.baseVal.value = " + drag.target.height.baseVal.value);
-
         drag.ctrTarget.cx.baseVal.value = e.clientX - drag.ctrOffcsetx; // 右上の円(X座標)
-		//drag.ctrTarget.cy.baseVal.value = e.clientY - drag.ctrOffcsety;
-
 		drag.cblTarget.cy.baseVal.value = e.clientY - drag.cblOffcsety; // 左下の円(Y座標)
-
         drag.cbrTarget.cx.baseVal.value = e.clientX - drag.cbrOffcsetx; // 左下の円(X座標)
 		drag.cbrTarget.cy.baseVal.value = e.clientY - drag.cbrOffcsety; // 左下の円(Y座標)
-
     }
     // 図形の移動
     /*
@@ -208,8 +200,6 @@ function showDebuginfo(argFlg,argStr){ // デバッグ用
 	document.getElementById("debugArea").innerHTML = wStr;
     console.log("[DEBUG] " + wStr)
 }
-
-
 </script>
 </head>
 <body>
