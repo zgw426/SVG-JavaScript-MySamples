@@ -1,0 +1,122 @@
+
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8"/>
+<script>
+let SvgArea = 'svgArea';
+let objs = [
+    { "x": 100, "y": 100, "w":100, "h":100, color: "#ABC1FF", opacity: "0.8", label: "FUGA" },
+    { "x": 200, "y": 200, "w":70, "h":50, color: "#FF02AB", opacity: "0.5", label: "HOGE" },
+]
+
+function svgRect(svgFld,x,y,w,h,color,opa,id){
+    //let dashVal = "none";
+    let dashVal = "10,2"; // (枠線の破線設定) noneは実線
+    this.rect=document.createElementNS("http://www.w3.org/2000/svg","rect");
+    //四角形
+    this.rect.setAttributeNS(null,"x",x);
+    this.rect.setAttributeNS(null,"y",y);
+    this.rect.setAttributeNS(null,"width",w);
+    this.rect.setAttributeNS(null,"height",h);
+    this.rect.setAttributeNS(null,"fill", color);
+    this.rect.setAttributeNS(null,"fill-opacity", opa);
+    this.rect.setAttributeNS(null,"id", id);
+    //枠線の描画
+    this.rect.setAttribute('stroke', '#0000ff');
+    this.rect.setAttribute('stroke-width', 2);
+    this.rect.setAttribute('stroke-dasharray', dashVal);
+    this.rect.setAttribute('stroke-linejoin', 'miter'); //角 miter round bevel inheri    this.rect.setAttribute('stroke-linecap', 'butt'); //切れ目 butt round square inherit
+
+    document.getElementById(svgFld).appendChild(this.rect);
+
+    // サイズ変更
+    //this.rect.width.baseVal.value = 200;
+    //this.rect.height.baseVal.value = 200;
+
+    /*
+    this.circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+    this.circle.setAttribute('cx', x);
+    this.circle.setAttribute('cy', y);
+    this.circle.setAttribute('r', 10);
+    this.circle.setAttribute('fill', '#a899bb');
+    this.circle.setAttribute('stroke', '#b22222');
+    this.circle.setAttribute('stroke-width', 2);
+    this.circle.setAttribute('stroke-dasharray', "none");
+    this.circle.setAttribute('opacity', 1);
+    this.circle.setAttribute('fill-opacity', 1);
+    this.circle.setAttribute('stroke-opacity', 1);
+    this.circle.setAttribute('transform', "rotate(0)");
+    document.getElementById(svgFld).appendChild(this.circle);
+    */
+
+    //svgCircle(svgFld,cx,cy,rVal,colorFill,colorStroke,opacity1,opacity2,opacity3);
+    //svgCircle(svgFld,x  ,  y,10,'#a899bb','#b22222',1.0,1.0,1.0 , id + "tl");
+    //svgCircle(svgFld,x+w,  y,10,'#a899bb','#b22222',1.0,1.0,1.0 , id + "tr");
+    //svgCircle(svgFld,x  ,y+h,10,'#a899bb','#b22222',1.0,1.0,1.0 , id + "bl");
+    //svgCircle(svgFld,x+w,y+h,10,'#a899bb','#b22222',1.0,1.0,1.0 , id + "br");
+}
+
+function svgCircle(svgFld,cx,cy,rVal,colorFill,colorStroke,opacity1,opacity2,opacity3,id){
+    this.circle = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+    this.circle.setAttribute("cx", cx);
+    this.circle.setAttribute("cy", cy);
+    this.circle.setAttribute("r", rVal);
+    this.circle.setAttribute("fill", colorFill);
+    this.circle.setAttribute("stroke", colorStroke);
+    this.circle.setAttribute("stroke-width", 2);
+    this.circle.setAttribute("stroke-dasharray", "none");
+    this.circle.setAttribute("opacity", opacity1);
+    this.circle.setAttribute("fill-opacity", opacity2);
+    this.circle.setAttribute("stroke-opacity", opacity3);
+    this.circle.setAttribute("transform", "rotate(0)");
+    this.circle.setAttributeNS(null,"id", id);
+    document.getElementById(svgFld).appendChild(this.circle);
+    return( this.circle );
+}
+
+
+function delElement(svgFld,tgtElement){ // SVG Element削除
+    document.getElementById(svgFld).removeChild(tgtElement);
+}
+
+window.onload = function() {
+    for (let i in objs) {
+        console.log(objs[i]);
+        iId      = i;
+        iX       = objs[i]["x"];
+        iY       = objs[i]["y"];
+        iW       = objs[i]["w"];
+        iH       = objs[i]["h"];
+        iColor   = objs[i]["color"];
+        iOpacity = objs[i]["opacity"];
+        iLabel      = objs[i]["label"];
+
+        console.log(iX);
+        console.log(iY);
+        console.log(iW);
+        console.log(iH);
+        console.log(iColor);
+        console.log(iOpacity);
+        console.log(iId);
+
+        svgRect(SvgArea,iX,iY,iW,iH,iColor,iOpacity,iId);
+
+        let res
+        if(i == 0){
+            svgCircle(SvgArea,iX   ,   iY,10,'#a899bb','#b22222',0.9,0.8,0.5 , iId + "tl");
+            svgCircle(SvgArea,iX+iW,   iY,10,'#a899bb','#b22222',1.0,1.0,1.0 , iId + "tr");
+            res = svgCircle(SvgArea,iX   ,iY+iH,10,'#a899bb','#b22222',1.0,1.0,1.0 , iId + "bl");
+            svgCircle(SvgArea,iX+iW,iY+iW,10,'#a899bb','#b22222',1.0,1.0,1.0 , iId + "br");
+            delElement(SvgArea,res);
+        }
+
+    }
+}
+
+</script>
+</head>
+<body>
+<svg width="1000" height="400" id="svgArea"></svg>
+</body>
+</html>

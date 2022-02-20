@@ -1,0 +1,219 @@
+
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8"/>
+<style>
+<!--
+* { margin: 0px; padding: 0px; }
+svg { border:solid 1px #a02180; }
+-->
+</style>
+<script>
+let SvgArea = 'svgArea'; // SVGタグのID
+// objs : 描画する四角形のパラメータ
+let objs = [
+    { "x": 10,  "y": 10, "w":100, "h":100, color: "#ABC1FF", opacity: "0.8", label: "FUGA" },
+    { "x": 200, "y": 30, "w":100, "h":100, color: "#FF02AB", opacity: "0.5", label: "HOGE" },
+    { "x": 300, "y": 10, "w":50,  "h":50,  color: "#FFABC1", opacity: "0.9", label: "PIYO" },
+    { "x": 400, "y": 30, "w":50,  "h":50,  color: "#991122", opacity: "1.0", label: "MATE" },
+]
+let tgtRect;
+let tgtId; // マウスクリックしたときに選択した四角形(rect)のID
+let drag = {
+    isMouseDown : false,
+    id : null, target: null, offsetx: 0, offsety: 0,
+    cTarget: false, cDifferencex: 0, cDifferencey: 0,
+    ctlId: null, ctlTarget: null, ctlElement: null, ctlOffcsetx:0, ctlOffsety: 0,
+    ctrId: null, ctrTarget: null, ctrElement: null, ctrOffcsetx:0, ctrOffsety: 0,
+    cblId: null, cblTarget: null, cblElement: null, cblOffcsetx:0, cblOffsety: 0,
+    cbrId: null, cbrTarget: null, cbrElement: null, cbrOffcsetx:0, cbrOffsety: 0
+}
+
+//SVG Rect(四角)
+function svgRect(svgFld,x,y,w,h,color,opa,id){
+    this.rect=document.createElementNS("http://www.w3.org/2000/svg","rect");
+    this.rect.setAttributeNS(null,"x",x);
+    this.rect.setAttributeNS(null,"y",y);
+    this.rect.setAttributeNS(null,"width",w);
+    this.rect.setAttributeNS(null,"height",h);
+    this.rect.setAttributeNS(null,"fill", color);
+    this.rect.setAttributeNS(null,"fill-opacity", opa);
+    this.rect.setAttributeNS(null,"id", id);
+    document.getElementById(svgFld).appendChild(this.rect);
+}
+
+//SVG Circle(円)
+function svgCircle(svgFld,cx,cy,rVal,colorFill,colorStroke,opacity1,opacity2,opacity3,id){
+    this.circle = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+    this.circle.setAttribute("cx", cx);
+    this.circle.setAttribute("cy", cy);
+    this.circle.setAttribute("r", rVal);
+    this.circle.setAttribute("fill", colorFill);
+    this.circle.setAttribute("stroke", colorStroke);
+    this.circle.setAttribute("stroke-width", 2);
+    this.circle.setAttribute("stroke-dasharray", "none");
+    this.circle.setAttribute("opacity", opacity1);
+    this.circle.setAttribute("fill-opacity", opacity2);
+    this.circle.setAttribute("stroke-opacity", opacity3);
+    this.circle.setAttribute("transform", "rotate(0)");
+    this.circle.setAttributeNS(null,"id", id);
+    document.getElementById(svgFld).appendChild(this.circle);
+    return( this.circle );
+}
+
+//SVG 要素の削除
+function delElement(svgFld,tgtElement){ // SVG Element削除
+    document.getElementById(svgFld).removeChild(tgtElement);
+}
+
+document.onmouseup = function () {
+	drag.isMouseDown = false;
+    if (drag.target != null) {
+        //変形後の数値を objs に格納する
+        objs[ drag.id ]["w"] = drag.target.width.baseVal.value;
+        objs[ drag.id ]["h"] = drag.target.height.baseVal.value;
+    }
+	drag.target = null;
+}
+document.onmousemove = function( e ) {
+    // 図形の変形
+    if (drag.target != null) {
+		drag.target.width.baseVal.value  = objs[ drag.id ]["w"] + e.clientX - drag.cDifferencex;
+		drag.target.height.baseVal.value = objs[ drag.id ]["h"] + e.clientY - drag.cDifferencey;
+
+        //showDebuginfo(1,"drag.target.width.baseVal.value = " + drag.target.width.baseVal.value +", drag.target.height.baseVal.value = " + drag.target.height.baseVal.value);
+
+        drag.ctrTarget.cx.baseVal.value = e.clientX - drag.ctrOffcsetx; // 右上の円(X座標)
+		//drag.ctrTarget.cy.baseVal.value = e.clientY - drag.ctrOffcsety;
+
+		drag.cblTarget.cy.baseVal.value = e.clientY - drag.cblOffcsety; // 左下の円(Y座標)
+
+        drag.cbrTarget.cx.baseVal.value = e.clientX - drag.cbrOffcsetx; // 左下の円(X座標)
+		drag.cbrTarget.cy.baseVal.value = e.clientY - drag.cbrOffcsety; // 左下の円(Y座標)
+
+    }
+    // 図形の移動
+    /*
+    if (drag.target != null) {
+		drag.target.x.baseVal.value = e.clientX - drag.offsetx;
+		drag.target.y.baseVal.value = e.clientY - drag.offsety;
+        objs[ drag.id ]["x"] = drag.target.x.baseVal.value;
+        objs[ drag.id ]["y"] = drag.target.y.baseVal.value;
+
+		drag.ctlTarget.cx.baseVal.value = e.clientX - drag.ctlOffcsetx;
+		drag.ctlTarget.cy.baseVal.value = e.clientY - drag.ctlOffcsety;
+    }
+    */
+}
+document.onmousedown = function( e ) {
+    eX = e.pageX;
+    eY = e.pageY;
+
+    for (let i in objs) {
+        iId    = i;
+        iXmin  = objs[i]["x"];
+        iXmax  = objs[i]["x"] + objs[i]["w"];
+        iYmin  = objs[i]["y"];
+        iYmax  = objs[i]["y"] + objs[i]["h"];
+
+        if (iXmin <= eX && eX < iXmax){ // マウスポインタのX座標が図形の範囲内にあるか？
+            if (iYmin <= eY && eY < iYmax){ // マウスポインタのX座標が図形の範囲内にある場合、Y座標は範囲内にあるか？
+                let chIdFlg = 0;
+                if(iId != tgtId){
+                    chIdFlg = 1;
+                    if (drag.cTarget != false) {
+                        delElement(SvgArea , drag.ctlElement); drag.ctlElement = null; // 左上の円
+                        delElement(SvgArea , drag.ctrElement); drag.ctrElement = null; // 右上の円
+                        delElement(SvgArea , drag.cblElement); drag.cblElement = null; // 左下の円
+                        delElement(SvgArea , drag.cbrElement); drag.cbrElement = null; // 右下の円
+                        drag.cTarget = false;
+                    }
+                }
+                tgtId = Number(iId);
+                tgtRect = document.getElementById( iId );
+                drag.id = tgtId;
+                drag.target = tgtRect;
+                drag.offsetx = e.clientX - objs[ tgtId ]["x"];
+                drag.offsety = e.clientY - objs[ tgtId ]["y"];
+                drag.isMouseDown = true;
+                
+                //-----------------------------------------------------//
+                if(drag.cTarget != true){
+                    if(chIdFlg == 1){
+
+                        drag.cTarget = true;
+                        //四角形の左上(TopLeft)の円
+                        drag.ctlId = tgtId + "tl";
+                        drag.ctlElement = svgCircle(SvgArea,objs[ tgtId ]["x"], objs[ tgtId ]["y"],10,'#a899bb','#b22222',0.9,0.8,0.5 , drag.ctlId);
+                        drag.ctlTarget = document.getElementById( drag.ctlId );
+
+                        //四角形の右上(TopRight)の円
+                        drag.ctrId = tgtId + "tr";
+                        drag.ctrElement = svgCircle(SvgArea, objs[ tgtId ]["x"]+objs[ tgtId ]["w"], objs[ tgtId ]["y"],10,'#9ba89b','#2a2a2a',0.9,0.8,0.5 , drag.ctrId);
+                        drag.ctrTarget = document.getElementById( drag.ctrId );
+
+                        //四角形の左下(BottomLeft)の円
+                        drag.cblId = tgtId + "bl";
+                        drag.cblElement = svgCircle(SvgArea, objs[ tgtId ]["x"], objs[ tgtId ]["y"]+objs[ tgtId ]["h"],10,'#9ba89b','#2a2a2a',0.9,0.8,0.5 , drag.cblId);
+                        drag.cblTarget = document.getElementById( drag.cblId );
+
+                        //四角形の右下(BottomRight)の円
+                        drag.cbrId = tgtId + "br";
+                        drag.cbrElement = svgCircle(SvgArea, objs[ tgtId ]["x"]+objs[ tgtId ]["w"], objs[ tgtId ]["y"]+objs[ tgtId ]["h"],10,'#9ba89b','#2a2a2a',0.9,0.8,0.5 , drag.cbrId);
+                        drag.cbrTarget = document.getElementById( drag.cbrId );
+
+                    }
+                }
+                drag.cDifferencex= e.clientX; // 円移動に使うオフセット(X座標)
+                drag.cDifferencey= e.clientY; // 円移動に使うオフセット(Y座標)
+                drag.ctrOffcsetx = e.clientX - objs[ tgtId ]["x"] - objs[ tgtId ]["w"]; // 右上の円(X座標)
+                drag.ctrOffcsety = e.clientY - objs[ tgtId ]["y"];                      // 右上の円(Y座標)
+                drag.cblOffcsetx = e.clientX - objs[ tgtId ]["x"];                      // 左下の円(X座標)
+                drag.cblOffcsety = e.clientY - objs[ tgtId ]["y"] - objs[ tgtId ]["h"]; // 左下の円(Y座標)
+                drag.cbrOffcsetx = e.clientX - objs[ tgtId ]["x"] - objs[ tgtId ]["w"]; // 右下の円(X座標)
+                drag.cbrOffcsety = e.clientY - objs[ tgtId ]["y"] - objs[ tgtId ]["h"]; // 右下の円(Y座標)
+                break;
+            }
+        }
+    }
+}
+
+window.onload = function() {
+    for (let i in objs) { // 四角形を描画
+        iId      = i;
+        iX       = objs[i]["x"];
+        iY       = objs[i]["y"];
+        iW       = objs[i]["w"];
+        iH       = objs[i]["h"];
+        iColor   = objs[i]["color"];
+        iOpacity = objs[i]["opacity"];
+		iLabel   = objs[i]["label"]
+        svgRect(SvgArea,iX,iY,iW,iH,iColor,iOpacity,iId);
+    }
+}
+
+function showDebuginfo(argFlg,argStr){ // デバッグ用
+	wStr = "";
+    wStr = argStr;
+    if(argFlg == 0){
+        wStr = "<BR>\n-------<BR>\n";
+        wStr += "isMouseDown = "+ drag["isMouseDown"] + "<BR>\n";
+        wStr += "target = "  + drag["target"] + "<BR>\n";
+        wStr += "offsetx = " + drag["offsetx"] + "<BR>\n";
+        wStr += "offsety = " + drag["offsety"] + "<BR>\n";
+        wStr += "objs[0] = " + objs[0]["x"] + ", " + objs[0]["y"] +"<BR>\n";
+        wStr += "objs[1] = " + objs[1]["x"] + ", " + objs[1]["y"] +"<BR>\n";
+    }
+	document.getElementById("debugArea").innerHTML = wStr;
+    console.log("[DEBUG] " + wStr)
+}
+
+
+</script>
+</head>
+<body>
+<svg width="1000" height="200" id="svgArea"></svg>
+<div id="debugArea"></div>
+</body>
+</html>
