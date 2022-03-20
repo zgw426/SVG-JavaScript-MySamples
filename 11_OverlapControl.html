@@ -13,9 +13,14 @@ let SvgArea = 'svgArea'; // SVGタグのID
 // objs : 描画する四角形のパラメータ
 let objs = [
     { "x": 10,  "y": 10, "w":90, "h":90, color: "#ffa500", opacity: "0.8", label: "ORANGE", group: "gr1"},
-    { "x": 200, "y": 30, "w":60, "h":80, color: "#0000ff", opacity: "0.5", label: "BLUE", group: "gr1"},
+    { "x": 200, "y": 30, "w":60, "h":80, color: "#0000ff", opacity: "0.9", label: "BLUE", group: "gr1"},
     { "x": 300, "y": 10, "w":50, "h":50, color: "#ff0000", opacity: "0.9", label: "RED", group: "gr1"},
     { "x": 400, "y": 30, "w":50, "h":50, color: "#008000", opacity: "1.0", label: "GREEN", group: "gr1"},
+    { "x": 450, "y": 30, "w":40, "h":40, color: "#FF8000", opacity: "1.0", label: "GREEN", group: "gr1"},
+    { "x": 500, "y": 30, "w":40, "h":40, color: "#0080FF", opacity: "1.0", label: "HOGE", group: "gr1"},
+    { "x": 550, "y": 30, "w":40, "h":40, color: "#FF80FF", opacity: "1.0", label: "FUGA", group: "gr1"},
+    { "x": 400, "y": 130, "w":50, "h":50, color: "#AA1155", opacity: "1.0", label: "PIYO", group: "gr1"},
+    { "x": 400, "y": 200, "w":50, "h":50, color: "#727272", opacity: "1.0", label: "UNO", group: "gr1"},
 ]
 let drag = {
     action : null,
@@ -42,6 +47,8 @@ let nDrag = {
 }
 
 let vGap = 10;
+
+
 
 //SVG Rect(四角)
 function svgRect(svgFld,x,y,w,h,color,opa,id){
@@ -92,11 +99,21 @@ document.onmouseup = function () {
 document.onmousemove = function( e ) {
     if (drag.target != null) {
         dragAction(e); // 選択した図形の移動or変形と選択した図形の四隅に描画した円図形の移動
+
         //-------------------------------------------------------//
         //同じグループの図形は重ならないようにする
         let debugStr="";
+
         let tgXArr = new Array(); // 選択した図形と同じグループの左上のX座標
         let tgXorign = 0;
+
+        /*
+        let tX = drag.target.x.baseVal.value;
+        let tW = drag.target.width.baseVal.value + 2*vGap;
+        let tY = drag.target.y.baseVal.value;
+        let tH = drag.target.height.baseVal.value + 2*vGap;
+        */
+
         let tX = drag.target.x.baseVal.value;
         let tW = drag.target.width.baseVal.value;
         let tY = drag.target.y.baseVal.value;
@@ -264,30 +281,54 @@ function dragAction(e){ // 選択した図形の移動or変形と選択した図
         drag.cblTarget.cy.baseVal.value = e.clientY - drag.cblOffsety; // 左下の円(Y座標)
         drag.cbrTarget.cx.baseVal.value = e.clientX - drag.cbrOffsetx; // 右下の円(X座標)
         drag.cbrTarget.cy.baseVal.value = e.clientY - drag.cbrOffsety; // 右下の円(Y座標)
-        //document.getElementById("debugArea2").innerHTML = "(Move) drag.id="+drag.id+", x=" + objs[ drag.id ]["x"] +", y="+ objs[ drag.id ]["y"];
+
+        document.getElementById("debugArea2").innerHTML = "(Move) drag.id="+drag.id+", x=" + objs[ drag.id ]["x"] +", y="+ objs[ drag.id ]["y"];
+
     }else if( drag.action == "Transform-X"){ // 図形の変形(X方向のみ)
+        //drag.target.width.baseVal.value  = objs[ drag.id ]["w"] + e.clientX - drag.cDifferencex; // 選択した図形の変形(X軸)
+        //objs[ drag.id ]["w"] = drag.target.width.baseVal.value; // 変数 objs の更新
+
         drag.target.width.baseVal.value  = drag.w + e.clientX - drag.cDifferencex; // 選択した図形の変形(X軸)
         objs[ drag.id ]["w"] = drag.target.width.baseVal.value; // 変数 objs の更新
+
+        //document.getElementById("debugArea2").innerHTML = "(Transform-X) " + objs[ drag.id ]["w"];
+
         drag.ctrTarget.cx.baseVal.value = e.clientX - drag.ctrOffsetx; // 右上の円(X座標)
         drag.cbrTarget.cx.baseVal.value = e.clientX - drag.cbrOffsetx; // 左下の円(X座標)
     }else if( drag.action == "Transform-Y"){ // 図形の変形(Y方向のみ)
+        //drag.target.height.baseVal.value = objs[ drag.id ]["h"] + e.clientY - drag.cDifferencey; // 選択した図形の変形(Y軸)
+        //objs[ drag.id ]["h"] = drag.target.height.baseVal.value;
+
         drag.target.height.baseVal.value = drag.h + e.clientY - drag.cDifferencey; // 選択した図形の変形(Y軸)
         objs[ drag.id ]["h"] = drag.target.height.baseVal.value;
+
+
+
         drag.cblTarget.cy.baseVal.value = e.clientY - drag.cblOffsety; // 左下の円(Y座標)
         drag.cbrTarget.cy.baseVal.value = e.clientY - drag.cbrOffsety; // 左下の円(Y座標)
+
         //document.getElementById("debugArea2").innerHTML = "(Transform-Y) ";
+
     }else if( drag.action == "Transform-XY"){ // 図形の変形
-        drag.target.width.baseVal.value  = objs[ drag.id ]["w"] + e.clientX - drag.cDifferencex; // 選択した図形の変形(X軸)
-        drag.target.height.baseVal.value = objs[ drag.id ]["h"] + e.clientY - drag.cDifferencey; // 選択した図形の変形(Y軸)
-        //objs[ drag.id ]["w"] = drag.target.width.baseVal.value; // 変数 objs の更新
-        //objs[ drag.id ]["h"] = drag.target.height.baseVal.value; // 変数 objs の更新
+        //drag.target.width.baseVal.value  = objs[ drag.id ]["w"] + e.clientX - drag.cDifferencex; // 選択した図形の変形(X軸)
+        //drag.target.height.baseVal.value = objs[ drag.id ]["h"] + e.clientY - drag.cDifferencey; // 選択した図形の変形(Y軸)
+
+        drag.target.width.baseVal.value  = drag.w + e.clientX - drag.cDifferencex; // 選択した図形の変形(X軸)
+        drag.target.height.baseVal.value = drag.h + e.clientY - drag.cDifferencey; // 選択した図形の変形(Y軸)
+        
+        objs[ drag.id ]["w"] = drag.target.width.baseVal.value; // 変数 objs の更新
+        objs[ drag.id ]["h"] = drag.target.height.baseVal.value; // 変数 objs の更新
+        
         drag.ctrTarget.cx.baseVal.value = e.clientX - drag.ctrOffsetx; // 右上の円(X座標)
         drag.cblTarget.cy.baseVal.value = e.clientY - drag.cblOffsety; // 左下の円(Y座標)
         drag.cbrTarget.cx.baseVal.value = e.clientX - drag.cbrOffsetx; // 左下の円(X座標)
         drag.cbrTarget.cy.baseVal.value = e.clientY - drag.cbrOffsety; // 左下の円(Y座標)
+
         //document.getElementById("debugArea2").innerHTML = "(Transform-XY) ";
+
     }
 }
+
 
 function setDragVal(argId,argE){ // 変数 drag に対象図形の情報を格納
     drag.id = Number(argId);
@@ -299,6 +340,8 @@ function setDragVal(argId,argE){ // 変数 drag に対象図形の情報を格�
     drag.w = objs[ drag.id ]["w"];
     drag.h = objs[ drag.id ]["h"];
 } 
+
+
 
 // 変数 drag の初期化
 function initialDragVal(){
@@ -364,7 +407,8 @@ function showObjs(){
         iColor   = objs[i]["color"];
         iOpacity = objs[i]["opacity"];
 		iLabel   = objs[i]["label"]
-        wStr += "id=" + iId;
+        wStr += "label=" + iLabel;
+        wStr += ", id=" + iId;
         wStr += ", iX=" + iX;
         wStr += ", iY=" + iY;
         wStr += ", iW=" + iW;
@@ -375,10 +419,19 @@ function showObjs(){
     document.getElementById("debugArea").innerHTML = wStr;
 }
 
+
+
 // 重なりを判定
 function judgmentOverlap(arg1Start, arg1Width, arg2Start, arg2Width){
     let judResutl = "INITIAL";    // 判定結果
     let rangeVal = 0; // 重なり量
+    /*
+    let l1s = arg1Start - vGap;
+    let l1e = arg1Start + arg1Width + vGap;
+    let l2s = arg2Start - vGap;
+    let l2e = arg2Start + arg2Width + vGap;
+    */
+
     let l1s = arg1Start;
     let l1e = arg1Start + arg1Width;
     let l2s = arg2Start;
@@ -406,9 +459,13 @@ function judgmentOverlap(arg1Start, arg1Width, arg2Start, arg2Width){
     if(judResutl == "OVERLAP"){
         rangeVal = Math.abs( Math.max(L1[0], L2[0]) - Math.min(L1[1], L2[1]) );
     }
-    console.log("func (judgmentOverlap) "+arg1Start+", "+arg1Width+", "+arg2Start+", "+arg2Width+", "+judResutl+", "+rangeVal);
+
+    //console.log("func (judgmentOverlap) "+arg1Start+", "+arg1Width+", "+arg2Start+", "+arg2Width+", "+judResutl+", "+rangeVal);
+
     return [judResutl,rangeVal];
 }
+
+
 
 function setSameGroupObjs01(tgXArr, ilp, tgXorign, tX,tY,tW,tH){ // 同じクループの図形を重なりが発生しないように移動する
     let nowId= tgXArr[ilp][0];
@@ -416,22 +473,25 @@ function setSameGroupObjs01(tgXArr, ilp, tgXorign, tX,tY,tW,tH){ // 同じクル
     let nowW = objs[nowId]["w"];
     let nowY = objs[nowId]["y"];
     let nowH = objs[nowId]["h"];
+    let nowLabel = objs[nowId]["label"];
 
     let jVal = ""; // 重なりの判定結果
     let moveDirect = "INITIAL"; // 移動方向(最終決定)
     let moveDirectX = "moveDirectX"; // 移動方向(X方向)
     let moveDirectY = "moveDirectY"; // 移動方向(Y方向)
-    let judgeResX;
-    let judgeResY;
+    let judgeResX = "DUMMY";
+    let judgeResY = "DUMMY";
 
     debugStr = "";
-    console.log("xxx-1 tgXorign="+tgXorign+", ilp="+ilp);
+    //console.log("xxx-1 tgXorign="+tgXorign+", ilp="+ilp);
+    console.log("x--------------------------------x nowLabel="+nowLabel);
     for(let jlp=tgXorign; jlp< ilp; jlp++){
         let befId = Number(tgXArr[jlp][0]);
         let befX = objs[befId]["x"];
         let befW = objs[befId]["w"];
         let befY = objs[befId]["y"];
         let befH = objs[befId]["h"];
+        let befLabel = objs[befId]["label"];
 
         if( befId ==  tgXorign){ // 1つ前の図形が選択した図形の場合
             befX = tX;
@@ -442,9 +502,12 @@ function setSameGroupObjs01(tgXArr, ilp, tgXorign, tX,tY,tW,tH){ // 同じクル
 
         judgeResX = judgmentOverlap(nowX, nowW, befX, befW);
         console.log("222-1 judgeResX=" + judgeResX+", "+nowX+", "+nowW+", "+befX+", "+befW);
+        //console.log("222-1 jlp=" + jlp+", befLabel="+befLabel+", jlp="+jlp);
+
         if(judgeResX[0] == "OVERLAP"){
             judgeResY = judgmentOverlap(nowY, nowH, befY, befH);
-            console.log("222-2 judgeResY=" + judgeResY+", "+nowY+", "+nowH+", "+befY+", "+befH);
+            //console.log("222-2 judgeResY=" + judgeResY+", "+nowY+", "+nowH+", "+befY+", "+befH);
+            //console.log("222-3 jlp=" + jlp+", befLabel="+befLabel+", jlp="+jlp+", judgeResX="+judgeResX+", judgeResY="+judgeResY);
             if(judgeResY[0] == "OVERLAP"){
                 if(nowY <= befY){ moveDirectY = "UP";  }else{ moveDirectY = "DOWN"; }
                 if(nowX <= befX){ moveDirectX = "LEFT";}else{ moveDirectX = "RIGHT";}
@@ -455,7 +518,7 @@ function setSameGroupObjs01(tgXArr, ilp, tgXorign, tX,tY,tW,tH){ // 同じクル
                 ////////////////////////////////////////////
                 //図形の移動
                 nDrag.id = Number(nowId); // 対象の図形を変数 nDrag に登録
-                console.log("drag.id="+drag.id+", nDrag.id="+nDrag.id);
+                //console.log("drag.id="+drag.id+", nDrag.id="+nDrag.id);
                     nDrag.target = document.getElementById( nDrag.id ); // 対象の図形を変数 nDrag に登録
                     if(moveDirect == "RIGHT"){
                         nxtX = befX + befW;
@@ -469,15 +532,15 @@ function setSameGroupObjs01(tgXArr, ilp, tgXorign, tX,tY,tW,tH){ // 同じクル
                         nxtX = befY + befH;
                         nDrag.target.y.baseVal.value = nxtX; // nDrag に登録した図形の移動(X軸)
                         objs[nDrag.id]["y"] = nxtX; // objs の情報を更新
-                        console.log("DOWN");
+                        //console.log("DOWN");
                     }else if(moveDirect == "UP"){
                         nxtX = befY - nowH;
                         nDrag.target.y.baseVal.value = nxtX; // nDrag に登録した図形の移動(X軸)
                         objs[nDrag.id]["y"] = nxtX; // objs の情報を更新
-                        console.log("UP");
+                        //console.log("UP");
                     }
                 document.getElementById("debugArea3").innerHTML = "(nDrag) nDrag.id=" + nDrag.id+", "+nowX+", "+nowW+", "+befX+", "+befW+", moveDirect=" + moveDirect;
-                console.log("\t[移動] ilp="+ ilp + ", jlp="+jlp+", nowId=" + nowId + ", befId=" + befId + ", judgeResX=" + judgeResX + ", judgeResY=" + judgeResY + ", moveDirect=" + moveDirect + ", objs["+nDrag.id+"][x]=" + objs[nDrag.id]["x"]);
+                //console.log("[移動] ilp="+ ilp + ", jlp="+jlp+", nowId=" + nowId + ", befId=" + befId + ", judgeResX=" + judgeResX + ", judgeResY=" + judgeResY + ", moveDirect=" + moveDirect + ", objs["+nDrag.id+"][x]=" + objs[nDrag.id]["x"]);
                 ///////////////////////////////////////////
             }else{
                 showDebuginfo(1,"重ならない(Y軸)");
@@ -487,9 +550,13 @@ function setSameGroupObjs01(tgXArr, ilp, tgXorign, tX,tY,tW,tH){ // 同じクル
             showDebuginfo(1,"重ならない(X軸) judgeResX = " + judgeResX);
             document.getElementById("debugArea3").innerHTML = "(nDrag) 重ならない(X軸) nDrag.id=" + nDrag.id;
         }
+        console.log("222-3 jlp=" + jlp+", befLabel="+befLabel+", jlp="+jlp+", judgeResX="+judgeResX+", judgeResY="+judgeResY);
         debugStr+= "nowId: "+nowId + ", nowX: " + nowX + ", befId: " +befId+ ", befX: "+ befX+ ", moveDirect: "+ moveDirect + "<BR />";
     }
+    console.log("x================================x");
+
     showObjs(); // DEBUG
+    //
 }
 
 
@@ -510,7 +577,7 @@ function setSameGroupObjs02(tgXArr, ilp, tgXorign, tX,tY,tW,tH){ // 同じクル
 
     debugStr = "";
     for(let jlp=tgXorign; jlp>=0; jlp--){
-        console.log("jlp = " + jlp);
+        //console.log("jlp = " + jlp);
         let befId = Number(tgXArr[jlp][0]);
         let befX = objs[befId]["x"];
         let befW = objs[befId]["w"];
@@ -523,13 +590,16 @@ function setSameGroupObjs02(tgXArr, ilp, tgXorign, tX,tY,tW,tH){ // 同じクル
             befW = tW;
             befY = tY;
             befH = tH;
+            befLabel = "AAA";
         }
 
         judgeResX = judgmentOverlap(nowX, nowW, befX, befW);
+        //console.log("333-1 judgeResX=" + judgeResX+", "+nowX+", "+nowW+", "+befX+", "+befW+", befId="+befId);
+        //console.log("333-1  nowLabel=" + nowLabel+", befLabel="+befLabel + ", jlp=" + jlp + ", tgXorign=" + tgXorign);
         if(judgeResX[0] == "OVERLAP" && befLabel != nowLabel){
             judgeResY = judgmentOverlap(nowY, nowH, befY, befH);
-            console.log("333-2 judgeResY=" + judgeResY+", "+nowY+", "+nowH+", "+befY+", "+befH);
-            console.log("333-3 nowLabel=" + nowLabel+", befLabel="+befLabel + ", jlp=" + jlp + ", tgXorign="+ tgXorign);
+            //console.log("333-2 judgeResY=" + judgeResY+", "+nowY+", "+nowH+", "+befY+", "+befH);
+            //console.log("333-3 nowLabel=" + nowLabel+", befLabel="+befLabel + ", jlp=" + jlp + ", tgXorign="+ tgXorign);
             if(judgeResY[0] == "OVERLAP"){
                 if(nowY <= befY){ moveDirectY = "UP";  }else{ moveDirectY = "DOWN"; }
                 if(nowX <= befX){ moveDirectX = "LEFT";}else{ moveDirectX = "RIGHT";}
@@ -540,27 +610,36 @@ function setSameGroupObjs02(tgXArr, ilp, tgXorign, tX,tY,tW,tH){ // 同じクル
                 ////////////////////////////////////////////
                 //図形の移動
                 nDrag.id = Number(nowId); // 対象の図形を変数 nDrag に登録
-                console.log("drag.id="+drag.id+", nDrag.id="+nDrag.id);
+                //console.log("drag.id="+drag.id+", nDrag.id="+nDrag.id);
                     nDrag.target = document.getElementById( nDrag.id ); // 対象の図形を変数 nDrag に登録
                     if(moveDirect == "RIGHT"){
-                        console.log("ここの処理はない")
+                        //nxtX = befX + befW;
+                        //nDrag.target.x.baseVal.value = nxtX; // nDrag に登録した図形の移動(X軸)
+                        //objs[nDrag.id]["x"] = nxtX; // objs の情報を更新
                     }else if(moveDirect == "LEFT"){
+                        //console.log("333-LEFT");
+                        //nxtX = nowX - befW;
+                        //nxtX = befX + nowW;
                         nxtX = befX - nowW;
                         nDrag.target.x.baseVal.value = nxtX; // nDrag に登録した図形の移動(X軸)
                         objs[nDrag.id]["x"] = nxtX; // objs の情報を更新
-                        console.log("[333-移動-LEFT] nowLabel=" + nowLabel+", befLabel="+befLabel);
+                        //console.log("[333-移動-LEFT] nowLabel=" + nowLabel+", befLabel="+befLabel);
                     }else if(moveDirect == "DOWN"){
+                        //
+                        //nxtX = befY - befH;
                         nxtX = befY + befH;
                         nDrag.target.y.baseVal.value = nxtX; // nDrag に登録した図形の移動(X軸)
                         objs[nDrag.id]["y"] = nxtX; // objs の情報を更新
-                        console.log("DOWN");
+                        //console.log("DOWN");
                     }else if(moveDirect == "UP"){
                         nxtX = befY - nowH;
                         nDrag.target.y.baseVal.value = nxtX; // nDrag に登録した図形の移動(X軸)
                         objs[nDrag.id]["y"] = nxtX; // objs の情報を更新
-                        console.log("UP");
+                        //console.log("UP");
                     }
                 document.getElementById("debugArea3").innerHTML = "(nDrag) nDrag.id=" + nDrag.id+", "+nowX+", "+nowW+", "+befX+", "+befW+", moveDirect=" + moveDirect;
+                //console.log("\t[移動] ilp="+ ilp + ", jlp="+jlp+", nowId=" + nowId + ", befId=" + befId + ", judgeResX=" + judgeResX + ", judgeResY=" + judgeResY + ", moveDirect=" + moveDirect + ", objs["+nDrag.id+"][x]=" + objs[nDrag.id]["x"]);
+                //console.log("[移動] nowLabel=" + nowLabel+", befLabel="+befLabel);
                 ///////////////////////////////////////////
             }else{
                 showDebuginfo(1,"重ならない(Y軸)");
@@ -572,7 +651,7 @@ function setSameGroupObjs02(tgXArr, ilp, tgXorign, tX,tY,tW,tH){ // 同じクル
         }
         debugStr+= "nowId: "+nowId + ", nowX: " + nowX + ", befId: " +befId+ ", befX: "+ befX+ ", moveDirect: "+ moveDirect + "<BR />";
     }
-    showObjs(); // DEBUG
+    //showObjs(); // DEBUG
 }
 
 
